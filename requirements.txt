@@ -8,3 +8,17 @@ statsmodels
 xgboost
 scikit-learn
 plotly>=6.0
+
+shap>=0.44.0
+
+shap>=0.44.0
+
+matplotlib>=3.8.0
+
+shap>=0.44.0
+
+prophet>=1.1.5
+
+shap>=0.44.0
+matplotlib>=3.8.0
+prophet>=1.1.5
