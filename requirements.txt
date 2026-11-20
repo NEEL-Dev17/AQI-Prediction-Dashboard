@@ -7,3 +7,4 @@ python-dotenv
 statsmodels
 xgboost
 scikit-learn
+plotly>=6.0

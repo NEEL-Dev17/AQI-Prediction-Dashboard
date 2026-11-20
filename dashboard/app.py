@@ -7,6 +7,15 @@ import plotly.express as px
 import streamlit as st
 import joblib
 
+CITY_COORDS = {
+    "Delhi":     {"lat": 28.6139, "lon": 77.2090},
+    "Mumbai":    {"lat": 19.0760, "lon": 72.8777},
+    "Bengaluru": {"lat": 12.9716, "lon": 77.5946},
+    "Chennai":   {"lat": 13.0827, "lon": 80.2707},
+    "Kolkata":   {"lat": 22.5726, "lon": 88.3639},
+    "Shanghai":  {"lat": 31.2304, "lon": 121.4737},
+}
+
 st.set_page_config(page_title="Air Quality Analytics", layout="wide")
 
 @st.cache_data
@@ -38,6 +47,41 @@ c1.metric("Cities", len(cities))
 c2.metric("Avg AQI", f"{dff.AQI.mean():.1f}")
 c3.metric("Max PM2.5", f"{dff.pm25.max():.1f} µg/m³")
 c4.metric("Worst City", dff.groupby("city").AQI.mean().idxmax())
+
+# ---------- INTERACTIVE MAP ----------
+st.subheader("🗺️ Live AQI Map")
+
+# Get the latest reading for each city
+latest_map_data = (
+    dff.sort_values("timestamp")
+       .groupby("city")
+       .tail(1)
+       .copy()
+)
+
+# Add lat/lon to the dataframe
+latest_map_data["lat"] = latest_map_data["city"].map(lambda x: CITY_COORDS.get(x, {}).get("lat"))
+latest_map_data["lon"] = latest_map_data["city"].map(lambda x: CITY_COORDS.get(x, {}).get("lon"))
+latest_map_data = latest_map_data.dropna(subset=["lat", "lon"]) # Drop if city not in dict
+
+if not latest_map_data.empty:
+    fig_map = px.scatter_map(
+	latest_map_data,
+    	lat="lat",
+    	lon="lon",
+    	color="AQI",
+    	size="AQI",
+    	hover_name="city",
+    	hover_data={"AQI": ":.1f", "pm25": ":.1f", "lat": False, "lon": False},
+    	color_continuous_scale="RdYlGn_r",
+    	size_max=40,
+    	zoom=2.5,
+    	center={"lat": 22.0, "lon": 90.0},
+    	map_style="carto-darkmatter",   # Note: mapbox_style changed to map_style
+    	title="Latest AQI by City (Bubble size & color = AQI)"
+    )
+    fig_map.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, height=500)
+    st.plotly_chart(fig_map, use_container_width=True)
 
 st.subheader("📈 AQI Time Series")
 fig = px.line(dff, x="timestamp", y="AQI", color="city", title="AQI over time")
