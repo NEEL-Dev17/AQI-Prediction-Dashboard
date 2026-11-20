@@ -10,7 +10,7 @@ Air pollution is one of the most pressing environmental health challenges worldw
 
 ## ✨ Features
 
-- **Multi-city Analysis** — Compare pollution across 6 major cities (Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Shanghai).
+- **Multi-city Analysis** — Compare pollution across 30+ Indian state and union territory capitals (including Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Hyderabad, Jaipur, Lucknow, and more).
 - **Multi-pollutant Support** — PM2.5, PM10, NO₂, SO₂, O₃, CO.
 - **Weather Integration** — Temperature, humidity, wind speed, pressure.
 - **Seasonal Pattern Detection** — Automatically filters available seasons (Summer, Monsoon).
