@@ -10,7 +10,7 @@ Air pollution is one of the most pressing environmental health challenges worldw
 
 ## ✨ Features
 
-- **Multi-city Analysis** — Compare pollution across 6 major cities (Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Shanghai).
+- **Multi-city Analysis** — Compare pollution across 30+ Indian state and union territory capitals (including Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Hyderabad, Jaipur, Lucknow, and more).
 - **Multi-pollutant Support** — PM2.5, PM10, NO₂, SO₂, O₃, CO.
 - **Weather Integration** — Temperature, humidity, wind speed, pressure.
 - **Seasonal Pattern Detection** — Automatically filters available seasons (Summer, Monsoon).
@@ -58,7 +58,7 @@ aqi-prediction-dashboard/
 ## 📷 Screenshots
 
 <img width="1535" height="682" alt="image" src="https://github.com/user-attachments/assets/8f62e818-9af3-4465-91c9-b6ec729a9972" />
-<img width="1093" height="582" alt="image" src="https://github.com/user-attachments/assets/472bda4c-c65b-4f2d-baf0-4d376be2908d" />
+<img width="1103" height="585" alt="image" src="https://github.com/user-attachments/assets/89cf64e5-8f64-4c93-9937-e4678a94a54d" />
 <img width="1143" height="500" alt="image" src="https://github.com/user-attachments/assets/5683342c-d612-4062-9476-470d2a6835a4" />
 <img width="1113" height="530" alt="image" src="https://github.com/user-attachments/assets/53a5af6d-a80e-4aef-b639-d053f76979d7" />
 <img width="1102" height="513" alt="image" src="https://github.com/user-attachments/assets/12aade2b-f60e-4936-8192-8063bf835498" />
