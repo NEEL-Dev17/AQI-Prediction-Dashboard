@@ -1,0 +1,2 @@
+timestamp,model_version,mae,r2,rows_trained,cities
+2026-11-20 23:38:22,xgb_aqi_2026_11_20_2338.pkl,1.6,0.9915,79488,36

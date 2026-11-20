@@ -1,4 +1,4 @@
-name: Hourly Data Update
+﻿name: Hourly Data Update
 
 on:
   schedule:
@@ -46,5 +46,6 @@ jobs:
           git add data/raw/air_quality.parquet
           git add data/processed/features.parquet
           git add models/xgb_aqi.pkl
+          git add models/model_metrics.csv
           git commit -m "Automated hourly data update [skip ci]" || echo "No changes to commit"
           git push
