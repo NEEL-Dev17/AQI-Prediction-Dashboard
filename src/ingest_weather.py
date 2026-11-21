@@ -1,15 +1,14 @@
+import time
 import pandas as pd
 import requests
 from pathlib import Path
 
 CITIES = {
-    # Current Indian Cities
     "Delhi":        (28.6139, 77.2090),
     "Mumbai":       (19.0760, 72.8777),
     "Bengaluru":    (12.9716, 77.5946),
     "Chennai":      (13.0827, 80.2707),
     "Kolkata":      (22.5726, 88.3639),
-    # New State Capitals
     "Amaravati":    (16.5149, 80.5163),
     "Itanagar":     (27.0844, 93.6053),
     "Dispur":       (26.1408, 91.7898),
@@ -33,7 +32,6 @@ CITIES = {
     "Agartala":     (23.8315, 91.2868),
     "Lucknow":      (26.8467, 80.9462),
     "Dehradun":     (30.3165, 78.0322),
-    # Union Territories
     "Port Blair":   (11.6234, 92.7265),
     "Daman":        (20.3974, 72.8328),
     "New Delhi":    (28.6139, 77.2090),
@@ -43,6 +41,7 @@ CITIES = {
     "Kavaratti":    (10.5593, 72.6358),
     "Puducherry":   (11.9416, 79.8083),
 }
+
 VARS = {
     "temperature_2m":       "temperature",
     "relative_humidity_2m": "humidity",
@@ -53,51 +52,69 @@ VARS = {
 OUT = Path("data/raw/weather.parquet")
 
 
-def fetch_city(city, lat, lon):
-    r = requests.get(
-        "https://api.open-meteo.com/v1/forecast",
-        params={
-            "latitude":      lat,
-            "longitude":     lon,
-            "hourly":        ",".join(VARS.keys()),
-            "past_days":     92,
-            "forecast_days": 0,
-            "timezone":      "UTC",
-        },
-        timeout=120,
-    )
-    r.raise_for_status()
-    hourly = r.json()["hourly"]
-    times = hourly["time"]
-    rows = []
-    for om_name, canon in VARS.items():
-        values = hourly.get(om_name)
-        if not values:
-            print(f"  [{city}] missing variable: {om_name}")
-            continue
-        for ts, v in zip(times, values):
-            if v is None:
-                continue
-            rows.append({"city": city, "timestamp": ts,
-                         "pollutant": canon, "value": float(v)})
-    return pd.DataFrame(rows)
+def fetch_city(city, lat, lon, retries=3):
+    """Fetch weather data for one city with retries and graceful failure."""
+    for attempt in range(1, retries + 1):
+        try:
+            r = requests.get(
+                "https://api.open-meteo.com/v1/forecast",
+                params={
+                    "latitude":      lat,
+                    "longitude":     lon,
+                    "hourly":        ",".join(VARS.keys()),
+                    "past_days":     92,
+                    "forecast_days": 0,
+                    "timezone":      "UTC",
+                },
+                timeout=180,  # Increased from 120
+            )
+            r.raise_for_status()
+            hourly = r.json()["hourly"]
+            times = hourly["time"]
+            rows = []
+            for om_name, canon in VARS.items():
+                values = hourly.get(om_name)
+                if not values:
+                    print(f"  [{city}] missing variable: {om_name}")
+                    continue
+                for ts, v in zip(times, values):
+                    if v is None:
+                        continue
+                    rows.append({"city": city, "timestamp": ts,
+                                 "pollutant": canon, "value": float(v)})
+            return pd.DataFrame(rows)
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
+            print(f"  [{city}] attempt {attempt}/{retries} failed: {e}")
+            if attempt < retries:
+                time.sleep(2 ** attempt)  # Wait 2s, 4s
+            else:
+                print(f"  [{city}] SKIPPED after {retries} attempts")
+                return pd.DataFrame()
+        except Exception as e:
+            print(f"  [{city}] unexpected error: {e}")
+            return pd.DataFrame()
 
 
 def main():
     frames = []
     for city, (lat, lon) in CITIES.items():
         df_city = fetch_city(city, lat, lon)
-        print(f"{city} -> {len(df_city)} rows")
-        frames.append(df_city)
+        if not df_city.empty:
+            print(f"{city} -> {len(df_city)} rows")
+            frames.append(df_city)
+        else:
+            print(f"{city} -> FAILED (skipped)")
+
+    if not frames:
+        raise RuntimeError("No cities succeeded. Check API connectivity.")
 
     df = pd.concat(frames, ignore_index=True)
-
     OUT.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(OUT, index=False)
 
-    print("\nTOTAL weather rows:", len(df))
+    print(f"\nTOTAL weather rows: {len(df)}")
     print(df["pollutant"].value_counts())
-    print("\nWrote", OUT)
+    print(f"\nWrote {OUT}")
 
 
 if __name__ == "__main__":
