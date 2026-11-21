@@ -2,7 +2,7 @@
 
 An end-to-end, self-updating machine learning platform that analyzes air pollution patterns across **30+ Indian State and Union Territory capitals**. It predicts the Air Quality Index (AQI), explains the predictions using SHAP, forecasts future AQI with Prophet, and visualizes everything in a live Streamlit dashboard.
 
-🔗 **Live Dashboard:** [https://aqi-prediction-dashboard.streamlit.app](https://aqi-prediction-dashboard-b6vkrfkwpixmckgmch92td.streamlit.app/)
+🔗 **Live Dashboard:** [https://aqi-prediction-dashboard.streamlit.app](https://aqi-prediction-dashboard-eepgmrmapnuwwofrw4xtic.streamlit.app/)
 📦 **Repository:** [https://github.com/NEEL-Dev17/AQI-Prediction-Dashboard](https://github.com/NEEL-Dev17/AQI-Prediction-Dashboard)
 
 ## 📖 Overview
